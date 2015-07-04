@@ -25,3 +25,4 @@ Dark/Red theme for Awesome WM
 
 ====
 
+**ISSUE: Invalid title when minimize**
