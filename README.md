@@ -13,6 +13,8 @@ Dark/Red theme for Awesome WM
  - Added many keybinding
  - Change keyboard layout changing the value of keyboard_layout in config/rc.lua
  - Changed hex color value in themes/default/rc.lua 
+ - Signals/Event catching
+ - Even more...
 
 ====
 
