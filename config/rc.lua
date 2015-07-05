@@ -7,6 +7,11 @@ require("beautiful")
 -- Notification library
 require("naughty")
 
+-- Use this function will cause crash...--
+function simpleNotify(title, text)
+      os.execute("notify-send".. " "..title.. " "..text)
+end
+
 --[[
 Keyboard Layout:
 ==> it : Italy
@@ -31,38 +36,72 @@ os.execute("setxkbmap "..keyboard_layout)
 conf_file = "/home/stefanozzz123/.config/awesome/rc.lua"
 theme_conf_file = "/usr/share/awesome/themes/default/theme.lua"
 
--- {{{ Error handling
--- Check if awesome encountered an error during startup and fell back to
--- another config (This code will only ever execute for the fallback config)
-if awesome.startup_errors then
-    naughty.notify({ preset = naughty.config.presets.critical,
-                     title = "Oops, there were errors during startup!",
-                     text = awesome.startup_errors })
+if awesome.startup_error then
+		  local errtitle = "ERROR!"
+		  local errtext = "There was an error during startup!"
+		  naughy.notify({ preset = naughty.config.presets.critical,
+								title = errtitle,
+								text = errtext
+							})
 end
 
 -- Handle runtime errors after startup
 do
     local in_error = false
-    awesome.add_signal("debug::error", function (err)
+	 local isDeprecated = false
+	 
+    awesome.add_signal("debug::error", function ()
         -- Make sure we don't go into an endless error loop
         if in_error then return end
         in_error = true
 
         naughty.notify({ preset = naughty.config.presets.critical,
                          title = "Oops, an error happened!",
-                         text = err })
+								 timeout = 5})
         in_error = false
     end)
+
+	 awesome.add_signal("debug::deprecated", function()
+				
+				if isDeprecated then return end
+				isDeprecated = true
+				-- Code...
+				naughty.notify({ preset = naughty.config.presets.normal,
+									  title = "Warning!",
+									  text = "A deprecated Lua function was called. This is not an error... Just a warning.",
+									  timeout = 5})
+				-- Done.
+				isDeprecated = false
+	 end)
 end
+
 -- }}}
+
 
 -- {{{ Variable definitions
 -- Themes define colours, icons, and wallpapers
 beautiful.init(theme_conf_file)
 
+--Change this value to get a custom textclock format.
+
+--dataformat should be a string
+--default value is: "%a %b %c, %H:%M"
+--             -->   Mon Jul 05, 10:30 (example)
+--
+dataformat="%a %d/%m/%Y %H:%M:%S"
+--updatedata must be an integer value
+--default value is: 60
+--But I want that it updates every second, so I set 1 
+updatedata=1
+
 -- This is used later as the default terminal and editor to run.
 terminal = "terminator"
 editor = "vim"
+file_manager = ""
+poweroff_cmd = "sudo /sbin/poweroff"
+reboot_cmd = "sudo /sbin/reboot"
+command_exec = "" -- Execute command without showing output
+command_exec_spawn = "" -- Spawn new Window 
 
 -- Default modkey.
 -- Usually, Mod4 is the key with a logo between Control and Alt.
@@ -71,6 +110,7 @@ editor = "vim"
 -- However, you can use another modifier like Mod1, but it may interact with others.
 modkey = "Mod4"
 
+--}}}
 -- Table of layouts to cover with awful.layout.inc, order matters.
 layouts =
 {
@@ -98,6 +138,14 @@ for s = 1, screen.count() do
     tags[s] = awful.tag({ "1", "2", "3", "4", "5", "6", "7", "8", "9" }, s, layouts[1])
 end
 
+screen[1]:add_signal("tag::history::update", function()
+		          local tagn = awful.tag.selected(1).name
+					 naughty.notify({ preset = naughty.config.presets.low,
+		   	                     title = "Workspace Changed",
+					                  text = "=> " .. tagn,
+											timeout = 2})
+	end)
+
 -- }}}
 
 -- {{{ Menu
@@ -109,11 +157,11 @@ myawesomemenu = {
 			end },
    { "Edit config file", function()
    				local term = terminal
-				awful.util.spawn(term .. " -e " .. "'" .. "vim" .. " " .. conf_file .. "'") 
+				awful.util.spawn(term .. " -e " .. "'" ..editor .. " " .. conf_file .. "'") 
 			end },
    { "Edit theme file", function()
    				local term = terminal
-				awful.util.spawn(term .. " -e " .. "'" .. "sudo vim" .. " " .. theme_conf_file .. "'")
+				awful.util.spawn(term .. " -e " .. "'" .. " sudo "..editor .. " " .. theme_conf_file .. "'")
 			end },
    { "Reload config", awesome.restart },
    { "Quit Awesome", awesome.quit }
@@ -122,8 +170,8 @@ myawesomemenu = {
 mymainmenu = awful.menu({ items = { { "Awesome...", myawesomemenu, beautiful.awesome_icon },
                                     { "Terminal", terminal, beautiful.terminal_icon },
 				    { "Editor: ".. editor, function() awful.util.spawn(terminal .. " -e " .."'".. editor .."'") end, beautiful.editor_icon },
-				    { "Power off", function() os.execute("sudo poweroff") end, beautiful.poweroff_icon },
-				    { "Reboot", function() os.execute("sudo reboot") end, beautiful.reboot_icon }
+				    { "Power off", function() os.execute(poweroff_cmd) end, beautiful.poweroff_icon },
+				    { "Reboot", function() os.execute(reboot_cmd) end, beautiful.reboot_icon }
                                   }
                         })
 
@@ -133,7 +181,10 @@ mylauncher = awful.widget.launcher({ image = image(beautiful.awesome_icon),
 
 -- {{{ Wibox
 -- Create a textclock widget
-mytextclock = awful.widget.textclock({ align = "right" })
+mytextclock = awful.widget.textclock.new({ align = "right"}, dataformat, updatedata)
+mytextclock:add_signal("mouse::enter", function()
+		  naughty.notify({ title = "Date & time", text = "Today is...", timeout = 1})
+end)
 
 -- Create a systray
 mysystray = widget({ type = "systray" })
@@ -194,7 +245,9 @@ for s = 1, screen.count() do
                            awful.button({ }, 3, function () awful.layout.inc(layouts, -1) end),
                            awful.button({ }, 4, function () awful.layout.inc(layouts, 1) end),
                            awful.button({ }, 5, function () awful.layout.inc(layouts, -1) end)))
-    -- Create a taglist widget
+    
+
+	 -- Create a taglist widget
     mytaglist[s] = awful.widget.taglist(s, awful.widget.taglist.label.all, mytaglist.buttons)
 
     -- Create a tasklist widget
@@ -297,14 +350,17 @@ globalkeys = awful.util.table.join(
 
     ... and replace 'stefanozzz123' with your $USER var
     ]]--
-    awful.key({ "Mod1", "Space" }, "p", function() os.execute("sudo /sbin/poweroff") end),
-    awful.key({ "Mod1", "Space" }, "r", function() os.execute("sudo /sbin/reboot") end),
+    awful.key({ "Mod1", "Space" }, "p", function() os.execute(poweroff_cmd) end),
+    awful.key({ "Mod1", "Space" }, "r", function() os.execute(reboot_cmd) end),
+
+	 --LibreOffice
+	 awful.key({ "Mod1", "Space"}, "l", function() awful.util.spawn("libreoffice") end),
 
     --Firefox
     awful.key({ "Mod1", "Shift" }, "f", function() awful.util.spawn("firefox") end),
 
-    --Thunar
-    awful.key({ "Mod1","Shift" }, "t", function() awful.util.spawn("dbus-launch thunar") end),
+    --File Manager
+    awful.key({ "Mod1","Shift" }, "t", function() awful.util.spawn("dbus-launch "..file_manager) end),
 
     --GParted 
     awful.key({ "Mod1" ,"Shift"}, "p", function() awful.util.spawn("gksu gparted") end),
@@ -338,8 +394,28 @@ globalkeys = awful.util.table.join(
     awful.key({"Mod1", "Space"}, "w", function() awful.util.spawn("wicd-gtk") end),
 
     --GIMP 
-    awful.key({"Mod1", "Space"}, "g", function() awful.util.spawn("gimp") end)
+    awful.key({"Mod1", "Space"}, "g", function() awful.util.spawn("gimp") end),
 
+	 --Ranger
+	 awful.key({"Mod1", "Space"}, "f", function() awful.util.spawn(terminal .. " -e".. " 'ranger'") end),
+	 
+	 --MOCP
+	 awful.key({"Mod1", "Space"}, "m", function() awful.util.spawn(terminal .. " -e".. " 'mocp'") end),
+
+	 --AlsaMixer
+	 awful.key({"Mod1", "Space"}, "z", function() awful.util.spawn(terminal .. " -e" .. " 'alsamixer'") end),
+
+	 --HTop
+	 awful.key({"Mod1", "Space"}, "x", function() awful.util.spawn(terminal .. " -e" .. " 'htop'")end),
+
+	 --Audio Control
+	 awful.key({}, "XF86AudioRaiseVolume", function() os.execute("amixer -q set Master 3dB+ unmute") end),
+	 awful.key({}, "XF86AudioLowerVolume", function() os.execute("amixer -q set Master 3dB- unmute") end),
+	 awful.key({}, "XF86AudioMute", function() os.execute("amixer -q set Master toggle") end),
+
+	 -- Your program
+	 awful.key({"Mod1"}, "Shift", function() os.execute(command_exec) end),
+	 awful.key({"Mod1"}, "Space", function() awful.util.spawn(terminal .. " -e" .. " '"..command_exec_spawn.."' ")end)
 )
 
 clientkeys = awful.util.table.join(
@@ -461,4 +537,30 @@ end)
 
 client.add_signal("focus", function(c) c.border_color = beautiful.border_focus end)
 client.add_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
+
+awesome.add_signal("spawn::initiated", function()
+		  naughty.notify({ title = "Starting...", 
+								 timeout = 3 })
+end)
+
+awesome.add_signal("spawn::canceled", function()
+		  naughty.notify({ title = "Aborted",
+								 text = "Application start aborted...",
+								 timeout = 3 })
+end)
+
+awesome.add_signal("exit", function()
+		  naughty.notify({ title = "Exiting awesome...",
+								 text = "Bye bye!",
+								 timeout = 1 })
+end)
+
+--[[
+You can add signals like this:
+
+what.add_signal("sign_name", function()
+      {...}
+end)
+]]
+
 -- }}}
