@@ -95,7 +95,8 @@ dataformat="%a %d/%m/%Y %H:%M:%S"
 updatedata=1
 
 -- This is used later as the default terminal and editor to run.
-terminal = "terminator"
+-- But only as default terminal. To do other things, Xterm will be used :) 
+terminal = "urxvt"
 editor = "vim"
 file_manager = ""
 poweroff_cmd = "sudo /sbin/poweroff"
@@ -152,15 +153,15 @@ screen[1]:add_signal("tag::history::update", function()
 -- Create a laucher widget and a main menu
 myawesomemenu = {
    { "Awesome manual", function() 
-   				local term = terminal
+   				local term = "xterm -title 'Awesome Manual'"
 				awful.util.spawn(term .. " -e " .. "'man awesome'")
 			end },
    { "Edit config file", function()
-   				local term = terminal
+   				local term = "xterm -title 'Awesome config file'"
 				awful.util.spawn(term .. " -e " .. "'" ..editor .. " " .. conf_file .. "'") 
 			end },
    { "Edit theme file", function()
-   				local term = terminal
+   				local term = "xterm -title 'Awesome theme file'"
 				awful.util.spawn(term .. " -e " .. "'" .. " sudo "..editor .. " " .. theme_conf_file .. "'")
 			end },
    { "Reload config", awesome.restart },
@@ -169,7 +170,9 @@ myawesomemenu = {
 
 mymainmenu = awful.menu({ items = { { "Awesome...", myawesomemenu, beautiful.awesome_icon },
                                     { "Terminal", terminal, beautiful.terminal_icon },
-				    { "Editor: ".. editor, function() awful.util.spawn(terminal .. " -e " .."'".. editor .."'") end, beautiful.editor_icon },
+				    { "Editor: ".. editor, function() 
+								local term = "xterm -title ' "..editor.." '"
+								awful.util.spawn(terminal .. " -e " .."'".. editor .."'") end, beautiful.editor_icon },
 				    { "Power off", function() os.execute(poweroff_cmd) end, beautiful.poweroff_icon },
 				    { "Reboot", function() os.execute(reboot_cmd) end, beautiful.reboot_icon }
                                   }
