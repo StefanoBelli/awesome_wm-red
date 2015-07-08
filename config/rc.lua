@@ -6,6 +6,8 @@ require("awful.rules")
 require("beautiful")
 -- Notification library
 require("naughty")
+--Widget lib
+require("vicious")
 
 -- Use this function will cause crash...--
 function simpleNotify(title, text)
@@ -96,6 +98,8 @@ updatedata=1
 
 -- This is used later as the default terminal and editor to run.
 -- But only as default terminal. To do other things, Xterm will be used :) 
+vbox_exec_cmd = "sudo VirtualBox"
+netcard = "wlp7s0"
 terminal = "urxvt"
 editor = "vim"
 file_manager = ""
@@ -114,6 +118,7 @@ modkey = "Mod4"
 --}}}
 -- Table of layouts to cover with awful.layout.inc, order matters.
 layouts =
+
 {
     awful.layout.suit.floating,
     awful.layout.suit.tile,
@@ -166,6 +171,7 @@ myawesomemenu = {
 			end },
    { "Reload config", awesome.restart },
    { "Quit Awesome", awesome.quit }
+
 }
 
 mymainmenu = awful.menu({ items = { { "Awesome...", myawesomemenu, beautiful.awesome_icon },
@@ -188,6 +194,53 @@ mytextclock = awful.widget.textclock.new({ align = "right"}, dataformat, updated
 mytextclock:add_signal("mouse::enter", function()
 		  naughty.notify({ title = "Date & time", text = "Today is...", timeout = 1})
 end)
+
+-- {{{ Bottom wibox widgets
+-- next: replace "names" with icons and make them better
+--
+-- **VICIOUS**
+
+-- CPU 
+showCPU = widget({ type = "textbox"})
+vicious.register(showCPU, vicious.widgets.cpu, " | CPU0: $1%, CPU1: $2%")
+
+-- Battery
+cur_battery = widget({ type = "textbox"})
+vicious.register(cur_battery, vicious.widgets.bat, " | Battery: $2%$1",5, "BAT1")
+
+-- Memory usage
+mem_usage = widget({ type = "textbox"})
+vicious.register(mem_usage, vicious.widgets.mem, " | RAM Usage: $1% [$2/$3MB]", 2)
+
+--Disk Usage
+disk_usage = widget({ type = "textbox"})
+vicious.register(disk_usage, vicious.widgets.fs, " | Disk (Used) [/]: ${/ used_p}GB")
+
+-- Volume
+volume = widget({ type = "textbox"})
+vicious.register(volume, vicious.widgets.volume, " | Volume: $1% ", 1, "Master")
+
+-- Network Usage
+network_usage = widget({ type = "textbox"})
+vicious.register(network_usage, vicious.widgets.net, " Net ["..netcard.."]: Download: ${"..netcard.." down_kb}kB / Upload: ${"..netcard.." up_kb}kB")
+
+-- user@hostname
+-- This widget goes on the top wibox. [ONLY THIS]
+user_host = widget({ type = "textbox"})
+vicious.register(user_host, vicious.widgets.os, " $3@$4 ")
+
+-- Uptime
+uptime = widget({ type = "textbox"})
+vicious.register(uptime, vicious.widgets.uptime, " | Uptime: $2h:$3m", 60)
+
+-- YourWidget
+-- widgetName = widget({ type = "yourtype"})
+-- vicious.register(widget, vicious.widget.module, ...)
+-- 
+-- then add it to wibox table
+--
+
+--}}}
 
 -- Create a systray
 mysystray = widget({ type = "systray" })
@@ -263,19 +316,40 @@ for s = 1, screen.count() do
     -- Add widgets to the wibox - order matters
     mywibox[s].widgets = {
         {
-            mylauncher,
+			   mylauncher,
+			   user_host,
             mytaglist[s],
             mypromptbox[s],
             layout = awful.widget.layout.horizontal.leftright
         },
-        mylayoutbox[s],
-        mytextclock,
+		  mytextclock,
         s == 1 and mysystray or nil,
         mytasklist[s],
         layout = awful.widget.layout.horizontal.rightleft
     }
 end
 -- }}}
+
+-- Bottom WiBox
+swibox = {}
+
+for s = 1, screen.count() do
+
+		  swibox[s] = awful.wibox({ position = "bottom", screen = s})
+		  swibox[s].widgets = {
+
+                { 
+					    network_usage
+					 },
+					 showCPU,
+					 mem_usage,
+					 disk_usage,
+					 uptime,
+					 cur_battery,
+					 volume,
+					 layout = awful.widget.layout.horizontal.leftright
+		  }
+end
 
 -- {{{ Mouse bindings
 root.buttons(awful.util.table.join(
@@ -343,6 +417,26 @@ globalkeys = awful.util.table.join(
                   awful.util.eval, nil,
                   awful.util.getdir("cache") .. "/history_eval")
               end),
+	 
+	 --OS Shell command
+	 awful.key({modkey}, "c", function()
+				awful.prompt.run({ prompt = "OS command: " },
+				mypromptbox[mouse.screen].widget,
+				function(s)
+						  os.execute(s)
+				end)
+	 end),
+
+	 --SSH Connection
+	 awful.key({modkey}, "s", function()
+				awful.prompt.run({ prompt = "SSH (user@host) or only host-> "},
+				mypromptbox[mouse.screen].widget,
+				function(s)
+						  awful.util.spawn("xterm -title 'SSH: "..s.."' -e 'ssh "..s.."; read'")
+				end)
+	 end),
+
+
     --Shutdown and reboot
     --[[
     No password needed:
@@ -388,7 +482,7 @@ globalkeys = awful.util.table.join(
     awful.key({"Mod1", "Shift"}, "w", function() awful.util.spawn("guvcview") end),
 
     --VirtualBox
-    awful.key({"Mod1", "Shift"}, "b", function() awful.util.spawn("sudo VirtualBox") end),
+    awful.key({"Mod1", "Shift"}, "b", function() awful.util.spawn(vbox_exec_cmd) end),
 
     --Do Screenshots with scrot
     awful.key({"Mod1", "Shift"}, "d", function() os.execute("scrot $HOME/Immagini/screenshot.png") end),

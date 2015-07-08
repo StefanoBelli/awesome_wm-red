@@ -6,16 +6,20 @@ Awesome WM red/dark theme plus config
 **Work-In-Progress**
 Dark/Red theme for Awesome WM
 
- - Using terminator as default terminal
+ - Using rxvt-unicode (aka URxvt) as default terminal
  - Using Vim as default text editor
  - Added some options to main Awesome menu (Editor, Vim, Power off, reboot, Awesome...->Edit theme file)
  - Customized red icons with GIMP 
  - Added many keybinding
  - Change keyboard layout changing the value of keyboard_layout in config/rc.lua
  - Changed hex color value in themes/default/rc.lua 
- - Signals/Event catching
- - Even more...
-
+ - Added bottom wibox
+ - Added SSH prompt
+ - Added OS command prompt
+ - Added many widget at the bottom wibox
+ - Added Vicious module (you need to get it...) [https://github.com/Mic92/vicious]
+ - Probably More...
+ 
 ====
 
 **How-to**
