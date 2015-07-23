@@ -2,6 +2,7 @@
 Awesome WM red/dark theme plus config
 
 ====
+**THIS CONFIG MAY JUST WORK WITH GENTOO LINUX!**
 
 **Work-In-Progress**
 Dark/Red theme for Awesome WM
