@@ -206,7 +206,7 @@ vicious.register(showCPU, vicious.widgets.cpu, " | CPU0: $1%, CPU1: $2%")
 
 -- Battery
 cur_battery = widget({ type = "textbox"})
-vicious.register(cur_battery, vicious.widgets.bat, " | Battery: $2%$1",5, "BAT1")
+vicious.register(cur_battery, vicious.widgets.bat, " | Battery: $2%",5, "BAT1")
 
 -- Memory usage
 mem_usage = widget({ type = "textbox"})
@@ -214,7 +214,7 @@ vicious.register(mem_usage, vicious.widgets.mem, " | RAM Usage: $1% [$2/$3MB]", 
 
 --Disk Usage
 disk_usage = widget({ type = "textbox"})
-vicious.register(disk_usage, vicious.widgets.fs, " | Disk (Used) [/]: ${/ used_p}GB")
+vicious.register(disk_usage, vicious.widgets.fs, " | Disk (Used) [/]: ${/ used_gb}/${/ size_gb}GB")
 
 -- Volume
 volume = widget({ type = "textbox"})
@@ -454,7 +454,7 @@ globalkeys = awful.util.table.join(
 	 awful.key({ "Mod1", "Space"}, "l", function() awful.util.spawn("libreoffice") end),
 
     --Firefox
-    awful.key({ "Mod1", "Shift" }, "f", function() awful.util.spawn("firefox") end),
+    awful.key({ "Mod1", "Shift" }, "f", function() awful.util.spawn("firefox-bin") end),
 
     --File Manager
     awful.key({ "Mod1","Shift" }, "t", function() awful.util.spawn("dbus-launch "..file_manager) end),

@@ -4,21 +4,21 @@
 
 theme = {}
 
-theme.font          = "Monaco 8"
+theme.font          = "Monospace 8"
 
 theme.bg_normal     = "#222222"
-theme.bg_focus      = "#FF0000"
-theme.bg_urgent     = "#ff0000"
-theme.bg_minimize   = "#222222"
+theme.bg_focus      = "#880000"
+theme.bg_urgent     = "#FFA500"
+theme.bg_minimize   = "#00FF00"
 
-theme.fg_normal     = "#FF0000"
-theme.fg_focus      = "#222222"
-theme.fg_urgent     = "#FFFF00"
-theme.fg_minimize   = "#FF0000"
+theme.fg_normal     = "#FB250D"
+theme.fg_focus      = "#FB250D"
+theme.fg_urgent     = "#FFA500"
+theme.fg_minimize   = "#OOFF00"
 
-theme.border_width  = "1"
+theme.border_width  = "2"
 theme.border_normal = "#222222"
-theme.border_focus  = "#FF0000"
+theme.border_focus  = "#880000"
 theme.border_marked = "#91231c"
 
 -- There are other variable sets
@@ -41,13 +41,16 @@ theme.tasklist_floating_icon = "/usr/share/awesome/themes/default/tasklist/float
 -- menu_[bg|fg]_[normal|focus]
 -- menu_[border_color|border_width]
 theme.menu_submenu_icon = "/usr/share/awesome/themes/default/submenu.png"
-theme.menu_height = "15"
+theme.menu_height = "10"
 theme.menu_width  = "100"
 
 -- You can add as many variables as
 -- you wish and access them by using
 -- beautiful.variable in your rc.lua
---theme.bg_widget = "#cc0000"
+theme.bg_widget = "#660000"
+
+theme.titlebar_bg_normal = theme.bg_widget
+theme.titlebar_bg_focused = theme.bg_widget
 
 -- Define the image to load
 theme.titlebar_close_button_normal = "/usr/share/awesome/themes/default/titlebar/close_normal.png"
@@ -74,7 +77,8 @@ theme.titlebar_maximized_button_normal_active = "/usr/share/awesome/themes/defau
 theme.titlebar_maximized_button_focus_active  = "/usr/share/awesome/themes/default/titlebar/maximized_focus_active.png"
 
 -- You can use your own command to set your wallpaper
-theme.wallpaper_cmd = { "awsetbg /usr/share/awesome/themes/default/background.png" }
+--                                     </replace/this/path/to/set/your/own/image.extension>
+theme.wallpaper_cmd = { "feh --bg-scale /usr/share/awesome/themes/default/red_awesome_theme_wallpaper.jpg" }
 
 -- You can use your own layout icons like this:
 theme.layout_fairh = "/usr/share/awesome/themes/default/layouts/fairhw.png"
@@ -90,12 +94,12 @@ theme.layout_tiletop = "/usr/share/awesome/themes/default/layouts/tiletopw.png"
 theme.layout_spiral  = "/usr/share/awesome/themes/default/layouts/spiralw.png"
 theme.layout_dwindle = "/usr/share/awesome/themes/default/layouts/dwindlew.png"
 
---USER-DEFINED ICONS--
+--Icons--
+theme.awesome_icon = "/usr/share/awesome/icons/awesome16_red_theme.png"
 theme.terminal_icon = "/usr/share/awesome/icons/term_red_theme.png"
 theme.editor_icon = "/usr/share/awesome/icons/npad_red_theme.png"
 theme.poweroff_icon = "/usr/share/awesome/icons/poweroff_red_theme.png"
 theme.reboot_icon = "/usr/share/awesome/icons/reboot_red_theme.png"
-theme.awesome_icon = "/usr/share/awesome/icons/awesome16_red_theme.png"
 
 return theme
 -- vim: filetype=lua:expandtab:shiftwidth=4:tabstop=8:softtabstop=4:textwidth=80
