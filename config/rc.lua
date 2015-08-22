@@ -1,3 +1,14 @@
+--[[
+Awesome configuration
+Based on standard awesome configuration
+keep a copy of standard config.
+
+I set some variable that you can easily change if you want
+
+TO-DO:
+ -> Something...
+]]
+
 -- Standard awesome library
 require("awful")
 require("awful.autofocus")
@@ -12,6 +23,33 @@ require("vicious")
 -- Use this function will cause crash...--
 function simpleNotify(title, text)
       os.execute("notify-send".. " "..title.. " "..text)
+end
+
+function lua_line_prompt()
+		  awful.prompt.run({ prompt = "Run Lua code: " },
+		  mypromptbox[mouse.screen].widget,
+		  awful.util.eval, nil,
+		  awful.util.getdir("cache") .. "/history_eval")
+end
+
+function os_command_prompt()
+		  awful.prompt.run({ prompt = "OS command: " },
+		  mypromptbox[mouse.screen].widget,
+		  function(s)
+					 os.execute(s)
+		  end)
+end
+
+function ssh_prompt()
+		  awful.prompt.run({ prompt = "SSH (user@host) or only host-> "},
+		  mypromptbox[mouse.screen].widget,
+		  function(s)
+					 awful.util.spawn("xterm -title 'SSH: "..s.."' -e 'ssh "..s.."; read'")
+		  end)
+end
+
+function do_screenshot(path) 
+		  os.execute("scrot".." "..path)
 end
 
 --[[
@@ -106,7 +144,7 @@ file_manager = ""
 poweroff_cmd = "sudo /sbin/poweroff"
 reboot_cmd = "sudo /sbin/reboot"
 command_exec = "" -- Execute command without showing output
-command_exec_spawn = "" -- Spawn new Window 
+command_exec_spawn = "telegram" -- Spawn new Window 
 
 -- Default modkey.
 -- Usually, Mod4 is the key with a logo between Control and Alt.
@@ -174,15 +212,24 @@ myawesomemenu = {
 
 }
 
-mymainmenu = awful.menu({ items = { { "Awesome...", myawesomemenu, beautiful.awesome_icon },
-                                    { "Terminal", terminal, beautiful.terminal_icon },
-				    { "Editor: ".. editor, function() 
-								local term = "xterm -title ' "..editor.." '"
-								awful.util.spawn(terminal .. " -e " .."'".. editor .."'") end, beautiful.editor_icon },
-				    { "Power off", function() os.execute(poweroff_cmd) end, beautiful.poweroff_icon },
-				    { "Reboot", function() os.execute(reboot_cmd) end, beautiful.reboot_icon }
-                                  }
-                        })
+otheractions = {
+		  { "SSH", ssh_prompt },
+		  { "OS Command", os_command_prompt },
+		  { "Lua code", lua_line_prompt },
+		  { "Screenshot", do_screenshot("$HOME/Immagini/screenshot.png") }
+}
+
+mymainmenu = awful.menu({ items = { 
+		  { "Awesome...", myawesomemenu, beautiful.awesome_icon },
+		  { "Actions...", otheractions },
+		  { "Terminal", terminal, beautiful.terminal_icon },
+		  { "Editor: ".. editor, function() 
+					 local term = "xterm -title ' "..editor.." '"
+					 awful.util.spawn(terminal .. " -e " .."'".. editor .."'") end, beautiful.editor_icon },
+		  { "Power off", function() os.execute(poweroff_cmd) end, beautiful.poweroff_icon },
+		  { "Reboot", function() os.execute(reboot_cmd) end, beautiful.reboot_icon }
+   }
+})
 
 mylauncher = awful.widget.launcher({ image = image(beautiful.awesome_icon),
                                      menu = mymainmenu })
@@ -410,31 +457,13 @@ globalkeys = awful.util.table.join(
     -- Prompt
     awful.key({ modkey },            "r",     function () mypromptbox[mouse.screen]:run() end),
 
-    awful.key({ modkey }, "x",
-              function ()
-                  awful.prompt.run({ prompt = "Run Lua code: " },
-                  mypromptbox[mouse.screen].widget,
-                  awful.util.eval, nil,
-                  awful.util.getdir("cache") .. "/history_eval")
-              end),
+    awful.key({ modkey }, "x", lua_line_prompt),
 	 
 	 --OS Shell command
-	 awful.key({modkey}, "c", function()
-				awful.prompt.run({ prompt = "OS command: " },
-				mypromptbox[mouse.screen].widget,
-				function(s)
-						  os.execute(s)
-				end)
-	 end),
+	 awful.key({modkey}, "c", os_command_prompt),
 
 	 --SSH Connection
-	 awful.key({modkey}, "s", function()
-				awful.prompt.run({ prompt = "SSH (user@host) or only host-> "},
-				mypromptbox[mouse.screen].widget,
-				function(s)
-						  awful.util.spawn("xterm -title 'SSH: "..s.."' -e 'ssh "..s.."; read'")
-				end)
-	 end),
+	 awful.key({modkey}, "s", ssh_prompt),
 
 
     --Shutdown and reboot
@@ -485,7 +514,7 @@ globalkeys = awful.util.table.join(
     awful.key({"Mod1", "Shift"}, "b", function() awful.util.spawn(vbox_exec_cmd) end),
 
     --Do Screenshots with scrot
-    awful.key({"Mod1", "Shift"}, "d", function() os.execute("scrot $HOME/Immagini/screenshot.png") end),
+    awful.key({"Mod1", "Shift"}, "d", do_screenshot("$HOME/Immagini/screenshot.png")),
 
     --Open WICD GTK 
     awful.key({"Mod1", "Space"}, "w", function() awful.util.spawn("wicd-gtk") end),
@@ -506,9 +535,11 @@ globalkeys = awful.util.table.join(
 	 awful.key({"Mod1", "Space"}, "x", function() awful.util.spawn(terminal .. " -e" .. " 'htop'")end),
 
 	 --Audio Control
+	 --[[
 	 awful.key({}, "XF86AudioRaiseVolume", function() os.execute("amixer -q set Master 3dB+ unmute") end),
 	 awful.key({}, "XF86AudioLowerVolume", function() os.execute("amixer -q set Master 3dB- unmute") end),
 	 awful.key({}, "XF86AudioMute", function() os.execute("amixer -q set Master toggle") end),
+    ]]
 
 	 -- Your program
 	 awful.key({"Mod1"}, "Shift", function() os.execute(command_exec) end),
