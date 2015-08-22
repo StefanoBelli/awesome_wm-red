@@ -19,6 +19,7 @@ Dark/Red theme for Awesome WM
  - Added OS command prompt
  - Added many widget at the bottom wibox
  - Added Vicious module (you need to get it...) [https://github.com/Mic92/vicious]
+ - Actions menu entry
  - Probably More...
  
 ====
@@ -32,4 +33,4 @@ Dark/Red theme for Awesome WM
 
 ====
 
-**ISSUE: Invalid title when minimize**
+**[FIXED:theme.lua] ISSUE: Invalid title when minimize**
