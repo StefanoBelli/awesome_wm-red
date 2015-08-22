@@ -48,8 +48,23 @@ function ssh_prompt()
 		  end)
 end
 
-function do_screenshot(path) 
-		  os.execute("scrot".." "..path)
+
+function do_screenshot() 
+		  os.execute("scrot".." "..screenshot_path)
+		  naughty.notify({
+					 title = "Screenshot",
+					 text = "Saved to: "..screenshot_path,
+					 timeout = 5
+		  })
+end
+
+function xrandr_auto_mode()
+		  os.execute("xrandr --auto")
+		  naughty.notify({
+					 title = "XRandR",
+					 text = "Auto mode activated...",
+					 timeout = 5
+		  })
 end
 
 --[[
@@ -145,6 +160,7 @@ poweroff_cmd = "sudo /sbin/poweroff"
 reboot_cmd = "sudo /sbin/reboot"
 command_exec = "" -- Execute command without showing output
 command_exec_spawn = "telegram" -- Spawn new Window 
+screenshot_path = "$HOME/screenshot.png"
 
 -- Default modkey.
 -- Usually, Mod4 is the key with a logo between Control and Alt.
@@ -196,17 +212,17 @@ screen[1]:add_signal("tag::history::update", function()
 -- Create a laucher widget and a main menu
 myawesomemenu = {
    { "Awesome manual", function() 
-   				local term = "xterm -title 'Awesome Manual'"
-				awful.util.spawn(term .. " -e " .. "'man awesome'")
-			end },
+			  local term = "xterm -title 'Awesome Manual'"
+			  awful.util.spawn(term .. " -e " .. "'man awesome'")
+	end },
    { "Edit config file", function()
-   				local term = "xterm -title 'Awesome config file'"
-				awful.util.spawn(term .. " -e " .. "'" ..editor .. " " .. conf_file .. "'") 
-			end },
+			  local term = "xterm -title 'Awesome config file'"
+			  awful.util.spawn(term .. " -e " .. "'" ..editor .. " " .. conf_file .. "'") 
+	end },
    { "Edit theme file", function()
-   				local term = "xterm -title 'Awesome theme file'"
-				awful.util.spawn(term .. " -e " .. "'" .. " sudo "..editor .. " " .. theme_conf_file .. "'")
-			end },
+			  local term = "xterm -title 'Awesome theme file'"
+			  awful.util.spawn(term .. " -e " .. "'" .. " sudo "..editor .. " " .. theme_conf_file .. "'")
+	end },
    { "Reload config", awesome.restart },
    { "Quit Awesome", awesome.quit }
 
@@ -216,12 +232,13 @@ otheractions = {
 		  { "SSH", ssh_prompt },
 		  { "OS Command", os_command_prompt },
 		  { "Lua code", lua_line_prompt },
-		  { "Screenshot", do_screenshot("$HOME/Immagini/screenshot.png") }
+		  { "Screenshot",do_screenshot },
+		  { "XRandR Auto Mode", xrandr_auto_mode }
 }
 
 mymainmenu = awful.menu({ items = { 
 		  { "Awesome...", myawesomemenu, beautiful.awesome_icon },
-		  { "Actions...", otheractions },
+		  { "Actions...", otheractions, beautiful.action_icon },
 		  { "Terminal", terminal, beautiful.terminal_icon },
 		  { "Editor: ".. editor, function() 
 					 local term = "xterm -title ' "..editor.." '"
@@ -269,7 +286,7 @@ vicious.register(volume, vicious.widgets.volume, " | Volume: $1% ", 1, "Master")
 
 -- Network Usage
 network_usage = widget({ type = "textbox"})
-vicious.register(network_usage, vicious.widgets.net, " Net ["..netcard.."]: Download: ${"..netcard.." down_kb}kB / Upload: ${"..netcard.." up_kb}kB")
+vicious.register(network_usage, vicious.widgets.net, " ["..netcard.."]: Download: ${"..netcard.." down_kb}kB / Upload: ${"..netcard.." up_kb}kB")
 
 -- user@hostname
 -- This widget goes on the top wibox. [ONLY THIS]
@@ -279,6 +296,10 @@ vicious.register(user_host, vicious.widgets.os, " $3@$4 ")
 -- Uptime
 uptime = widget({ type = "textbox"})
 vicious.register(uptime, vicious.widgets.uptime, " | Uptime: $2h:$3m", 60)
+
+-- WiFi
+wifi = widget({ type = "textbox"})
+vicious.register(wifi, vicious.widgets.wifi, " ${ssid}",3,netcard)
 
 -- YourWidget
 -- widgetName = widget({ type = "yourtype"})
@@ -386,8 +407,9 @@ for s = 1, screen.count() do
 		  swibox[s].widgets = {
 
                 { 
-					    network_usage
+					    wifi
 					 },
+					 network_usage, 
 					 showCPU,
 					 mem_usage,
 					 disk_usage,
@@ -514,7 +536,7 @@ globalkeys = awful.util.table.join(
     awful.key({"Mod1", "Shift"}, "b", function() awful.util.spawn(vbox_exec_cmd) end),
 
     --Do Screenshots with scrot
-    awful.key({"Mod1", "Shift"}, "d", do_screenshot("$HOME/Immagini/screenshot.png")),
+    awful.key({"Mod1", "Shift"}, "d", do_screenshot),
 
     --Open WICD GTK 
     awful.key({"Mod1", "Space"}, "w", function() awful.util.spawn("wicd-gtk") end),
@@ -535,11 +557,9 @@ globalkeys = awful.util.table.join(
 	 awful.key({"Mod1", "Space"}, "x", function() awful.util.spawn(terminal .. " -e" .. " 'htop'")end),
 
 	 --Audio Control
-	 --[[
 	 awful.key({}, "XF86AudioRaiseVolume", function() os.execute("amixer -q set Master 3dB+ unmute") end),
 	 awful.key({}, "XF86AudioLowerVolume", function() os.execute("amixer -q set Master 3dB- unmute") end),
 	 awful.key({}, "XF86AudioMute", function() os.execute("amixer -q set Master toggle") end),
-    ]]
 
 	 -- Your program
 	 awful.key({"Mod1"}, "Shift", function() os.execute(command_exec) end),

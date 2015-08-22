@@ -1,10 +1,23 @@
 # awesome_wm-red
 Awesome WM red/dark theme plus config
 
+*CHANGE POWEROFF AND REBOOT COMMAND FROM VARIABLES*
+
+ This config works with:
+  
+  - Scrot 
+  - Feh
+  - XRandR 
+  - Vicious
+
+ Advised:
+  
+  - Vim 
+  - URxvt
+
 ====
 **THIS CONFIG MAY JUST WORK WITH GENTOO LINUX!**
 
-**Work-In-Progress**
 Dark/Red theme for Awesome WM
 
  - Using rxvt-unicode (aka URxvt) as default terminal
@@ -20,6 +33,7 @@ Dark/Red theme for Awesome WM
  - Added many widget at the bottom wibox
  - Added Vicious module (you need to get it...) [https://github.com/Mic92/vicious]
  - Actions menu entry
+ - XRandR Auto mode
  - Probably More...
  
 ====
@@ -34,3 +48,6 @@ Dark/Red theme for Awesome WM
 ====
 
 **[FIXED:theme.lua] ISSUE: Invalid title when minimize**
+**[WARN] Screenshot @ awesome reload/startup**
+**[WARN] Keybinding crash, needs configuration reload**
+

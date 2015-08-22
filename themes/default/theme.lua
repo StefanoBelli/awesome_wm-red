@@ -2,6 +2,7 @@
 -- Default awesome theme --
 ---------------------------
 
+wallpaper = "/home/stefanozzz123/Immagini/red-wallpaper-7.jpg"
 theme = {}
 
 theme.font          = "Monaco 8"
@@ -74,7 +75,7 @@ theme.titlebar_maximized_button_normal_active = "/usr/share/awesome/themes/defau
 theme.titlebar_maximized_button_focus_active  = "/usr/share/awesome/themes/default/titlebar/maximized_focus_active.png"
 
 -- You can use your own command to set your wallpaper
-theme.wallpaper_cmd = { "awsetbg /usr/share/awesome/themes/default/background.png" }
+theme.wallpaper_cmd = { "feh --bg-scale "..wallpaper }
 
 -- You can use your own layout icons like this:
 theme.layout_fairh = "/usr/share/awesome/themes/default/layouts/fairhw.png"
@@ -96,6 +97,8 @@ theme.editor_icon = "/usr/share/awesome/icons/npad_red_theme.png"
 theme.poweroff_icon = "/usr/share/awesome/icons/poweroff_red_theme.png"
 theme.reboot_icon = "/usr/share/awesome/icons/reboot_red_theme.png"
 theme.awesome_icon = "/usr/share/awesome/icons/awesome16_red_theme.png"
+theme.action_icon = "/usr/share/awesome/icons/action16.png"
 
+--RETURN table
 return theme
 -- vim: filetype=lua:expandtab:shiftwidth=4:tabstop=8:softtabstop=4:textwidth=80
