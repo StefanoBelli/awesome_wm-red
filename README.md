@@ -48,6 +48,6 @@ Dark/Red theme for Awesome WM
 ====
 
 **[FIXED:theme.lua] ISSUE: Invalid title when minimize**
-**[WARN] Screenshot @ awesome reload/startup**
+**[FIXED:WARN] Screenshot @ awesome reload/startup**
 **[WARN] Keybinding crash, needs configuration reload**
 
