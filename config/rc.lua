@@ -25,6 +25,10 @@ function simpleNotify(title, text)
       os.execute("notify-send".. " "..title.. " "..text)
 end
 
+function spawn_term()
+		  awful.util.spawn(terminal)
+end
+
 function lua_line_prompt()
 		  awful.prompt.run({ prompt = "Run Lua code: " },
 		  mypromptbox[mouse.screen].widget,
@@ -461,7 +465,7 @@ globalkeys = awful.util.table.join(
         end),
 
     -- Standard program
-    awful.key({ modkey,           }, "Return", function () awful.util.spawn(terminal) end),
+    awful.key({ "Shift",           }, "Return", spawn_term),
     awful.key({ modkey, "Control" }, "r", awesome.restart),
     awful.key({ modkey, "Shift"   }, "q", awesome.quit),
 

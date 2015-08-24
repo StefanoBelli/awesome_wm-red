@@ -2,6 +2,7 @@
 Awesome WM red/dark theme plus config
 
 *CHANGE POWEROFF AND REBOOT COMMAND FROM VARIABLES*
+*TERMINAL KEYBINDING CHANGED TO: "Shift"+"Return"*
 
  This config works with:
   
@@ -49,5 +50,5 @@ Dark/Red theme for Awesome WM
 
 **[FIXED:theme.lua] ISSUE: Invalid title when minimize**
 **[FIXED:WARN] Screenshot @ awesome reload/startup**
-**[WARN] Keybinding crash, needs configuration reload**
+**[WARN:TERMINAL] Keybinding crash, needs configuration reload**
 
