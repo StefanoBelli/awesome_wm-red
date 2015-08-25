@@ -165,6 +165,7 @@ reboot_cmd = "sudo /sbin/reboot"
 command_exec = "" -- Execute command without showing output
 command_exec_spawn = "telegram" -- Spawn new Window 
 screenshot_path = "$HOME/screenshot.png"
+mixer = "pamixer" -- values: pamixer, amixer
 
 -- Default modkey.
 -- Usually, Mod4 is the key with a logo between Control and Alt.
@@ -465,7 +466,7 @@ globalkeys = awful.util.table.join(
         end),
 
     -- Standard program
-    awful.key({ "Shift",           }, "Return", spawn_term),
+    --awful.key({ "Shift",           }, "Return", spawn_term),
     awful.key({ modkey, "Control" }, "r", awesome.restart),
     awful.key({ modkey, "Shift"   }, "q", awesome.quit),
 
@@ -561,9 +562,20 @@ globalkeys = awful.util.table.join(
 	 awful.key({"Mod1", "Space"}, "x", function() awful.util.spawn(terminal .. " -e" .. " 'htop'")end),
 
 	 --Audio Control
-	 awful.key({}, "XF86AudioRaiseVolume", function() os.execute("amixer -q set Master 3dB+ unmute") end),
-	 awful.key({}, "XF86AudioLowerVolume", function() os.execute("amixer -q set Master 3dB- unmute") end),
-	 awful.key({}, "XF86AudioMute", function() os.execute("amixer -q set Master toggle") end),
+	 awful.key({}, "XF86AudioRaiseVolume", function() 
+				if mixer == "amixer" then os.execute("amixer -q set Master 3dB+ unmute") 
+				elseif mixer == "pamixer" then os.execute("pamixer -i 3") end 
+	 end),
+
+	 awful.key({}, "XF86AudioLowerVolume", function() 
+				if mixer == "amixer" then os.execute("amixer -q set Master 3dB- unmute") 
+				elseif mixer == "pamixer" then os.execute("pamixer -d 3") end
+	 end),
+
+	 awful.key({}, "XF86AudioMute", function() 
+				if mixer == "amixer" then os.execute("amixer -q set Master toggle")
+				elseif mixer == "pamixer" then os.execute("pamixer -t") end
+	 end),
 
 	 -- Your program
 	 awful.key({"Mod1"}, "Shift", function() os.execute(command_exec) end),
